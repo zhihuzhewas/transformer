@@ -108,7 +108,7 @@ def multi_head_attention(query, key, value, attn_mask=None, dropout=0.1):
 
     # Apply softmax to get attention weights
     attention_weights = nn.functional.softmax(scores, dim=-1)
-    attention_weights = dropout(attention_weights)
+    attention_weights = nn.functional.dropout(attention_weights,dropout)
 
     # Apply attention weights to value
     output = torch.matmul(attention_weights, value)

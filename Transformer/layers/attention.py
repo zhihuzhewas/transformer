@@ -48,7 +48,7 @@ class MultiHeadAttention(nn.Module):
         # YOUR CODE HERE
         query = self.Wq(q_data).view(q_data.shape[0], self.n_head, q_data.shape[1], q_data.shape[2]//self.n_head)
         key = self.Wk(k_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shape[2]//self.n_head)
-        value = self.Wv(v_data)
+        value = self.Wv(v_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shape[2]//self.n_head)
 
         # query, key, value = None, None, None
         ############################################################################

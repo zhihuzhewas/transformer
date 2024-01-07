@@ -46,8 +46,8 @@ class MultiHeadAttention(nn.Module):
         # key and value should be reshaped into (N, H, T, E/H)
         ############################################################################
         # YOUR CODE HERE
-        query = self.Wq(q_data)
-        key = self.Wk(k_data)
+        query = self.Wq(q_data).view(query.shpae[0], self.n_head, query.shape[2], (query.shape[3] * query.shape[1])//self.n_head)
+        key = self.Wk(k_data).view(query.shpae[0], self.n_head, key.shape[2], (query.shape[3] * query.shape[1])//self.n_head)
         value = self.Wv(v_data)
 
         # query, key, value = None, None, None
@@ -85,7 +85,7 @@ def multi_head_attention(query, key, value, head_num, attn_mask=None, dropout=0.
     T = key.shape[2]
     E = query.shape[3] * query.shape[1]
     output = torch.empty((N, S, E))
-    head_dim = E//head_num
+    #head_dim = E//head_num
     attention = None
 
     # Implement multiheaded attention using the equations given in             #
@@ -106,9 +106,6 @@ def multi_head_attention(query, key, value, head_num, attn_mask=None, dropout=0.
     # query = query.view(N, S, head_num, head_dim)
     # key = key.view(N, T, head_num, head_dim)
     # value = value.view(N, T, head_num, head_dim)
-    query = query.view(N, -1, head_num, head_dim)
-    key = key.view(N, -1, head_num, head_dim)
-    value = value.view(N, -1, head_num, head_dim)
 
     query = query.transpose(1, 2)
     key = key.transpose(1, 2)

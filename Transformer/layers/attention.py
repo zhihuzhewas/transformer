@@ -111,7 +111,7 @@ def multi_head_attention(query, key, value, head_num, attn_mask=None, dropout=0.
     key = key.transpose(1, 2)
     value = value.transpose(1, 2)
     
-    scores = torch.matmul(query, key.transpose(-2, -1)) / np.sqrt(query.size(-1))
+    scores = torch.matmul(query, key.transpose(-1, -2)) / np.sqrt(query.size(-1))
     if attn_mask is not None:
         scores = scores.masked_fill(attn_mask == 0, float('-inf'))
 

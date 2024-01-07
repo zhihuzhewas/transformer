@@ -46,8 +46,8 @@ class MultiHeadAttention(nn.Module):
         # key and value should be reshaped into (N, H, T, E/H)
         ############################################################################
         # YOUR CODE HERE
-        query = self.Wq(q_data).view(q_data.shape[0], self.n_head, q_data.shape[1], q_data.shap[2]//self.n_head)
-        key = self.Wk(k_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shap[2]//self.n_head)
+        query = self.Wq(q_data).view(q_data.shape[0], self.n_head, q_data.shape[1], q_data.shape[2]//self.n_head)
+        key = self.Wk(k_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shape[2]//self.n_head)
         value = self.Wv(v_data)
 
         # query, key, value = None, None, None

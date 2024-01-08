@@ -115,9 +115,10 @@ def multi_head_attention(query, key, value, head_num, multi_head_combine, attn_m
     # value = value.transpose(1, 2)
     # print(query.size())
     # print(key.size())
-    scores = torch.matmul(query, key.transpose(-1, -2)) / np.sqrt(query.size(-1))
+    scores = torch.matmul(query, key.transpose(-2, -1)) / np.sqrt(query.size(-1))
     if attn_mask is not None:
         #mask.cuda()
+        attn_mask = attn_mask.eq(0).unsqueeze(0).unsqueeze(1).repeat(N, head_num, 1, 1)
         scores = scores.masked_fill(attn_mask == 0, float('-inf'))
 
     # Apply softmax to get attention weights

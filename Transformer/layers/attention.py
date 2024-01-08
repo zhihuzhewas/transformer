@@ -21,7 +21,7 @@ class MultiHeadAttention(nn.Module):
         self.Wq = nn.Linear(embed_dim, embed_dim)
         self.Wv = nn.Linear(embed_dim, embed_dim)
         self.multi_head_combine = nn.Linear(embed_dim, embed_dim)
-        self.dropout = dropout
+        self.attn_drop = nn.Dropout(dropout)
 
         self.n_head = num_heads
         self.emd_dim = embed_dim
@@ -56,13 +56,13 @@ class MultiHeadAttention(nn.Module):
         # query, key, value = None, None, None
         ############################################################################
 
-        output, attention = multi_head_attention(query, key, value, self.n_head,self.multi_head_combine, attn_mask=attn_mask, dropout=self.dropout)
+        output, attention = multi_head_attention(query, key, value, attn_mask=attn_mask, dropout=self.dropout)
         output = self.multi_head_combine(output)
 
         return output, attention
 
 
-def multi_head_attention(query, key, value, head_num, multi_head_combine, attn_mask=None, dropout=0.1):
+def multi_head_attention(query, key, value, head_num, attn_mask=None, dropout=0.1):
     # Calculate the masked attention output for the provided data, computing
     # all attention heads in parallel.
 
@@ -87,7 +87,7 @@ def multi_head_attention(query, key, value, head_num, multi_head_combine, attn_m
     S = query.shape[2]
     T = key.shape[2]
     E = query.shape[3] * query.shape[1]
-    output = torch.empty((N, S, E))
+    #output = torch.empty((N, S, E))
     #head_dim = E//head_num
     attention = None
 
@@ -115,7 +115,7 @@ def multi_head_attention(query, key, value, head_num, multi_head_combine, attn_m
     # value = value.transpose(1, 2)
     # print(query.size())
     # print(key.size())
-    scores = torch.matmul(query, key.transpose(-2, -1)) / np.sqrt(query.size(-1))
+    scores = torch.matmul(query, key.transpose(-1, -2)) / np.sqrt(query.size(-1))
     if attn_mask is not None:
         #mask.cuda()
         attn_mask = attn_mask.eq(0).unsqueeze(0).unsqueeze(1).repeat(N, head_num, 1, 1)
@@ -129,7 +129,6 @@ def multi_head_attention(query, key, value, head_num, multi_head_combine, attn_m
     attention = attention_weights
     output = torch.matmul(attention_weights, value)
     output = output.transpose(1, 2).contiguous().view(N, S, -1)
-    output = multi_head_combine(output)
     ############################################################################
     return output, attention
 

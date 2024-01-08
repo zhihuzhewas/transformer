@@ -21,7 +21,7 @@ class MultiHeadAttention(nn.Module):
         self.Wq = nn.Linear(embed_dim, embed_dim)
         self.Wv = nn.Linear(embed_dim, embed_dim)
         self.multi_head_combine = nn.Linear(embed_dim, embed_dim)
-        self.attn_drop = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(dropout)
 
         self.n_head = num_heads
         self.emd_dim = embed_dim
@@ -56,13 +56,13 @@ class MultiHeadAttention(nn.Module):
         # query, key, value = None, None, None
         ############################################################################
 
-        output, attention = multi_head_attention(query, key, value, attn_mask=attn_mask, dropout=self.dropout)
+        output, attention = multi_head_attention(query, key, value, dropout=self.dropout, attn_mask=attn_mask)
         output = self.multi_head_combine(output)
 
         return output, attention
 
 
-def multi_head_attention(query, key, value, head_num, attn_mask=None, dropout=0.1):
+def multi_head_attention(query, key, value, head_num, dropout, attn_mask=None):
     # Calculate the masked attention output for the provided data, computing
     # all attention heads in parallel.
 
@@ -123,7 +123,8 @@ def multi_head_attention(query, key, value, head_num, attn_mask=None, dropout=0.
 
     # Apply softmax to get attention weights
     attention_weights = nn.functional.softmax(scores, dim=-1)
-    attention_weights = nn.functional.dropout(attention_weights,dropout)
+    #attention_weights = nn.functional.dropout(attention_weights,dropout)
+    attention_weights = dropout(attention_weights)
 
     # Apply attention weights to value
     attention = attention_weights

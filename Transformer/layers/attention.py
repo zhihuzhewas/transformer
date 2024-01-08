@@ -128,7 +128,7 @@ def multi_head_attention(query, key, value, head_num, multi_head_combine, attn_m
     # Apply attention weights to value
     attention = attention_weights
     output = torch.matmul(attention_weights, value)
-    output = output.transpose(1, 2).contiguous().view(N, S, -1)
+    output = output.transpose(1, 2).contiguous().view(N, -1, E)
     output = multi_head_combine(output)
     ############################################################################
     return output, attention

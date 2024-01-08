@@ -268,7 +268,7 @@ class MultiHeadAttention(nn.Module):
         output = output.transpose(1, 2).contiguous().view(N, S, -1)
         output = self.proj(output)
         ############################################################################
-        return output
+        return output, attention
 
 
 def rel_error(x, y):

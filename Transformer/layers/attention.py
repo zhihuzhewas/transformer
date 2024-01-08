@@ -56,13 +56,13 @@ class MultiHeadAttention(nn.Module):
         # query, key, value = None, None, None
         ############################################################################
 
-        output, attention = multi_head_attention(query, key, value, self.n_head, attn_mask=attn_mask, dropout=self.dropout)
+        output, attention = multi_head_attention(query, key, value, self.n_head,self.multi_head_combine, attn_mask=attn_mask, dropout=self.dropout)
         output = self.multi_head_combine(output)
 
         return output, attention
 
 
-def multi_head_attention(query, key, value, head_num, attn_mask=None, dropout=0.1):
+def multi_head_attention(query, key, value, head_num, multi_head_combine, attn_mask=None, dropout=0.1):
     # Calculate the masked attention output for the provided data, computing
     # all attention heads in parallel.
 
@@ -128,7 +128,7 @@ def multi_head_attention(query, key, value, head_num, attn_mask=None, dropout=0.
     attention = attention_weights
     output = torch.matmul(attention_weights, value)
     output = output.transpose(1, 2).contiguous().view(N, S, -1)
-
+    output = torch.matmul(multi_head_combine, output)
     ############################################################################
     return output, attention
 

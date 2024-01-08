@@ -56,7 +56,7 @@ class MultiHeadAttention(nn.Module):
         # query, key, value = None, None, None
         ############################################################################
 
-        output, attention = multi_head_attention(query, key, value, dropout=self.dropout, attn_mask=attn_mask)
+        output, attention = multi_head_attention(query, key, value, self.n_head, dropout=self.dropout, attn_mask=attn_mask)
         output = self.multi_head_combine(output)
 
         return output, attention

@@ -50,9 +50,9 @@ class MultiHeadAttention(nn.Module):
         # key = self.Wk(k_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shape[2]//self.n_head)
         # value = self.Wv(v_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shape[2]//self.n_head)
 
-        query = self.Wq(q_data).view(q_data.shape[0], query.shape[1], self.n_head, self.head_dim).transpose(1,2)
-        key = self.Wk(k_data).view(q_data.shape[0], value.shape[1], self.n_head, self.head_dim).transpose(1,2)
-        value = self.Wv(v_data).view(q_data.shape[0], value.shape[1], self.n_head, self.head_dim).transpose(1,2)
+        query = self.Wq(q_data).view(q_data.shape[0], q_data.shape[1], self.n_head, self.head_dim).transpose(1,2)
+        key = self.Wk(k_data).view(q_data.shape[0], v_data.shape[1], self.n_head, self.head_dim).transpose(1,2)
+        value = self.Wv(v_data).view(q_data.shape[0], v_data.shape[1], self.n_head, self.head_dim).transpose(1,2)
         # query, key, value = None, None, None
         ############################################################################
 

@@ -46,10 +46,13 @@ class MultiHeadAttention(nn.Module):
         # key and value should be reshaped into (N, H, T, E/H)
         ############################################################################
         # YOUR CODE HERE
-        query = self.Wq(q_data).view(q_data.shape[0], self.n_head, q_data.shape[1], q_data.shape[2]//self.n_head)
-        key = self.Wk(k_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shape[2]//self.n_head)
-        value = self.Wv(v_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shape[2]//self.n_head)
+        # query = self.Wq(q_data).view(q_data.shape[0], self.n_head, q_data.shape[1], q_data.shape[2]//self.n_head)
+        # key = self.Wk(k_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shape[2]//self.n_head)
+        # value = self.Wv(v_data).view(q_data.shape[0], self.n_head, k_data.shape[1], q_data.shape[2]//self.n_head)
 
+        query = self.Wq(q_data).view(q_data.shape[0], -1, self.n_head, self.head_dim).transpose(1,2)
+        key = self.Wk(k_data).view(q_data.shape[0], -1, self.n_head, self.head_dim).transpose(1,2)
+        value = self.Wv(v_data).view(q_data.shape[0], -1, self.n_head, self.head_dim).transpose(1,2)
         # query, key, value = None, None, None
         ############################################################################
 
@@ -112,8 +115,9 @@ def multi_head_attention(query, key, value, head_num, attn_mask=None, dropout=0.
     # value = value.transpose(1, 2)
     # print(query.size())
     # print(key.size())
-    scores = torch.matmul(query, key.transpose(-2, -1)) / np.sqrt(query.size(-1))
+    scores = torch.matmul(query, key.transpose(-1, -2)) / np.sqrt(query.size(-1))
     if attn_mask is not None:
+        mask.cuda()
         scores = scores.masked_fill(attn_mask == 0, float('-inf'))
 
     # Apply softmax to get attention weights

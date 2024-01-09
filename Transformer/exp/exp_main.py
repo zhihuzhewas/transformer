@@ -77,6 +77,9 @@ class Exp_Main(Exp_Basic):
         return total_loss
 
     def train(self, setting):
+        train_curve = []
+        validate_curve = []
+        test_curve = []
         train_data, train_loader = self._get_data(flag='train')
         vali_data, vali_loader = self._get_data(flag='val')
         test_data, test_loader = self._get_data(flag='test')
@@ -95,7 +98,7 @@ class Exp_Main(Exp_Basic):
 
         if self.args.use_amp:
             scaler = torch.cuda.amp.GradScaler()
-
+        num = 0
         for epoch in range(self.args.train_epochs):
             iter_count = 0
             train_loss = []
@@ -159,11 +162,24 @@ class Exp_Main(Exp_Basic):
             print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
                 epoch + 1, train_steps, train_loss, vali_loss, test_loss))
             early_stopping(vali_loss, self.model, path)
+            num = epoch+1
+            train_curve.append(train_loss)
+            validate_curve.append(vali_loss)
+            test_curve.append(test_loss)
+
             if early_stopping.early_stop:
                 print("Early stopping")
                 break
 
             adjust_learning_rate(model_optim, epoch + 1, self.args)
+        
+        plt.plot(num, train_curve, 'b', label="Training Loss")
+        plt.plot(num, validate_curve, 'r', label="Validation Loss")
+        plt.plot(num, test_curve, 'g', label="Test Loss")
+        plt.title('Transformer Loss')
+        plt.legend()
+        plt.savefig('./result.png')
+        plt.close()
 
         best_model_path = path + '/' + 'checkpoint.pth'
         self.model.load_state_dict(torch.load(best_model_path))

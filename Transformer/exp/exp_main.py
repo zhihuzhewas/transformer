@@ -173,6 +173,7 @@ class Exp_Main(Exp_Basic):
 
             adjust_learning_rate(model_optim, epoch + 1, self.args)
         
+        num = range(num)
         plt.plot(num, train_curve, 'b', label="Training Loss")
         plt.plot(num, validate_curve, 'r', label="Validation Loss")
         plt.plot(num, test_curve, 'g', label="Test Loss")
